@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #aaa;
+            margin-top: 50px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #submit-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        #image-preview {
+            max-width: 300px;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Classifier</h1>
+        <p>Select an image and see its classification:</p>
+        <form id="upload-form">
+            <input type="file" id="image-input" accept="image/*">
+            <img id="image-preview" src="#" alt="your image" style="display:none"/>
+            <button type="submit" id="submit-button">Classify Image</button>
+        </form>
+        <p id="output"></p>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#image-preview').attr('src', e.target.result).show();
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#image-input").change(function() {
+                readURL(this);
+            });
+
+            $('#upload-form').on('submit', function (e) {
+                e.preventDefault();
+
+                var formData = new FormData();
+                var imageFile = document.querySelector('#image-input');
+                formData.append("image", imageFile.files[0]);
+
+                $.ajax({
+                    url: '/predict',  // Replace this with your API endpoint
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        $('#output').html('Classified as: ' + data.label);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#output').html('Error: ' + textStatus + ', ' + errorThrown);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
