@@ -1,7 +1,7 @@
 import pandas as pd
 import random
 
-df = pd.read_csv('caption.csv')
+df = pd.read_csv('data/caption.csv')
 
 captions_dict = df.groupby('sport')['caption'].apply(list).to_dict()
 

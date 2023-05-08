@@ -1,111 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Image Classifier</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
+  <meta charset="UTF-8">
+  <title>Caption Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
 
-        .container {
-            width: 80%;
-            margin: auto;
-            padding: 20px;
-            box-sizing: border-box;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px 0px #aaa;
-            margin-top: 50px;
-        }
+    .container {
+      width: 80%;
+      margin: auto;
+      padding: 40px;
+      box-sizing: border-box;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px 0px #aaa;
+      margin-top: 50px;
+    }
 
-        h1 {
-            color: #333;
-            text-align: center;
-        }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
 
-        #output {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
 
-        #submit-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    .hide {
+      display: none;
+    }
 
-        #submit-button:hover {
-            background-color: #0056b3;
-        }
+    .btn-footer {
+      display: inline-block;
+      margin: 0 auto;
+    }
 
-        #image-preview {
-            max-width: 300px;
-            height: auto;
-            display: block;
-            margin: 20px auto;
-        }
-    </style>
+    .button {
+      /* display: block; */
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: #080808;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+
+    #image-preview {
+      /* max-width: 500px; */
+      height: auto;
+      display: block;
+      /* margin: 20px auto; */
+    }
+
+    .highlight {
+      position: absolute;
+      /* top: 100px;
+            left: 200px;
+            width: 100px;
+            height: 100px; */
+      background-color: rgba(255, 0, 0, 0.5);
+      z-index: 1;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .highlight:hover {
+      transform: scale(1.1);
+    }
+
+    .menu {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      display: none;
+      z-index: 2;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .menu li {
+      margin-bottom: 5px;
+      cursor: pointer;
+      padding: 5px;
+      background-color: #f2f2f2;
+      border-radius: 3px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .menu li:hover {
+      background-color: #ccc;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Image Classifier</h1>
-        <p>Select an image and see its classification:</p>
-        <form id="upload-form">
-            <input type="file" id="image-input" accept="image/*">
-            <img id="image-preview" src="#" alt="your image" style="display:none"/>
-            <button type="submit" id="submit-button">Classify Image</button>
-        </form>
-        <p id="output"></p>
-    </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            function readURL(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        $('#image-preview').attr('src', e.target.result).show();
-                    }
-                    reader.readAsDataURL(input.files[0]);
-                }
+  <div class="container">
+    <h1>Sport Caption Finder</h1>
+    <br/>
+    <h2 id="note-select-image">Select an image to find a caption:</h2>
+    <h2 class="hide" id="note-spell-check">Please select the highlighted words and choose from the suggested options to correct any errors.</h2>
+    
+    
+    <form id="upload-form">
+      <input type="file" id="image-input" accept="image/*">
+      <div id="preview-container" style="display: inline-block; position: relative;">
+        <img id="image-preview" src="#" alt="your image" style="display:none" usemap="#text-map" />
+        <div id="spell-menu" class="menu">
+          <ul>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="btn-footer">
+          <button type="button" class="button hide" id="home-button">Home</button>
+          <button type="button" class="button hide" id="next-button">Next</button>
+          <button type="button" class="button hide" id="caption-button">Genarate Caption</button>
+        </div>
+      </div>
+      
+      
+      
+    </form>
+    <p id="output"></p>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      var textData;
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('#image-preview').attr('src', e.target.result).show();
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      function removeHighlights() {
+        $('.highlight').remove();
+        $('#spell-menu').hide();
+      }
+
+      function addHighlights(data) {
+        data.forEach(function (fragment, i) {
+          if(fragment.suggestions.length == 0) {
+            return;
+          }
+          var top = fragment.vertices[0].y;
+          var left = fragment.vertices[0].x;
+          var height = fragment.vertices[2].y - fragment.vertices[0].y;
+          var width = fragment.vertices[2].x - fragment.vertices[0].x;
+
+          var menuTop = fragment.vertices[2].y;
+          var menuLeft = fragment.vertices[2].x;
+
+          highlight = $('<div>', {
+            id: 'highlight-' + i,
+            class: 'highlight',
+            css: {
+              "top": top + 'px',
+              "left": left + 'px',
+              "width": width + 'px',
+              "height": height + 'px'
             }
-
-            $("#image-input").change(function() {
-                readURL(this);
+          })
+          highlight.on('click', function () {
+            console.log('clicked');
+            var menu = $('#spell-menu').hide();
+            var menuItems = $('#spell-menu > ul');
+            menu.css({
+              "top": menuTop + 'px',
+              "left": menuLeft + 'px'
             });
+            menuItems.empty();
+            fragment.suggestions.forEach(function (suggestion) {
+              menuItems.append(
+                $('<li>').text(suggestion).on('click', function () {
+                  menu.hide();
+                  $('#highlight-' + i).hide();
+                  fragment.description = suggestion;
+                  console.log(fragment);
+                })
+              )
+            })
 
-            $('#upload-form').on('submit', function (e) {
-                e.preventDefault();
-
-                var formData = new FormData();
-                var imageFile = document.querySelector('#image-input');
-                formData.append("image", imageFile.files[0]);
-
-                $.ajax({
-                    url: '/predict',  // Replace this with your API endpoint
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        $('#output').html('Classified as: ' + data.label);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        $('#output').html('Error: ' + textStatus + ', ' + errorThrown);
-                    }
-                });
-            });
+            menu.show();
+          })
+          highlight.appendTo('#preview-container');
         });
-    </script>
+      }
+
+      $("#image-input").change(function () {
+        $("#next-button").show();
+        removeHighlights();
+        readURL(this);
+      });
+
+      $('#next-button').on('click', function (e) {
+        $("#next-button").hide();
+        $("#image-input").hide();
+
+        var formData = new FormData();
+        var imageFile = document.querySelector('#image-input');
+        formData.append("image", imageFile.files[0]);
+
+        $.ajax({
+            url: '/get_text',  // Replace this with your API endpoint
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                // $('#output').html('Classified as: ' + data.label);
+                removeHighlights();
+                addHighlights(data);
+                textData = data;
+                $("#caption-button").show();
+                $("#home-button").show();
+                $("#note-spell-check").show();
+                $("#note-select-image").hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#output').html('Error: ' + textStatus + ', ' + errorThrown);
+                $("#next-button").show();
+                $("#image-input").show();
+            }
+        });  
+      });
+
+      $("#home-button").on("click", function() {
+        location.reload();
+      });
+
+      $("#caption-button").on("click", function() {
+        $("#caption-button").hide();
+        var formData = new FormData();
+        var text = textData.map(function (e) {
+          return e.description;
+        }).join(" ");
+        formData.append("text", text);
+
+        $.ajax({
+            url: '/predict',  // Replace this with your API endpoint
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+              $('#output').html('Caption : ' + data.caption + "<br>" + 'Sport name : ' + data.label);
+              $("#note-spell-check").hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              $("#caption-button").show();
+              $('#output').html('Error: ' + textStatus + ', ' + errorThrown);
+            }
+        });
+      });
+    });
+  </script>
 </body>
+
 </html>

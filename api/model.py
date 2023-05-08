@@ -77,4 +77,8 @@ pipeline.fit(x_train, y_train)
 def predict(text):
     test_text = stem(text)
     predicted_label = pipeline.predict([test_text])
+    # print(pipeline.predict_proba([test_text]))
+    # print(pipeline.classes_)
+    for i, j in sorted(zip(pipeline.predict_proba([test_text])[0],pipeline.classes_)):
+        print(j.ljust(15, ' '), i)
     return predicted_label[0]

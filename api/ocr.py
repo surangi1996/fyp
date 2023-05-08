@@ -20,7 +20,7 @@ def extract_text(image):
     response = client.annotate_image(request)
     return [{
         "description": e.description,
-        "vertices": e.boundingPoly.vertices,
+        "vertices": [{'x': e.x, 'y': e.y} for e in e.bounding_poly.vertices],
         "suggestions": suggest(e.description)
     } for e in response.text_annotations if e.description.isalpha()]
     
