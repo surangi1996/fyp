@@ -224,6 +224,7 @@
       $('#next-button').on('click', function (e) {
         $("#next-button").hide();
         $("#image-input").hide();
+        
 
         var formData = new FormData();
         var imageFile = document.querySelector('#image-input');
@@ -237,13 +238,18 @@
             processData: false,
             success: function (data) {
                 // $('#output').html('Classified as: ' + data.label);
+                
                 removeHighlights();
                 addHighlights(data);
                 textData = data;
+                var text = textData.map(function (e) {
+          return e.description;
+        }).join(" ");
                 $("#caption-button").show();
                 $("#home-button").show();
                 $("#note-spell-check").show();
                 $("#note-select-image").hide();
+                $('#output').html('Extracted Text: ' + text);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 $('#output').html('Error: ' + textStatus + ', ' + errorThrown);
@@ -264,7 +270,6 @@
           return e.description;
         }).join(" ");
         formData.append("text", text);
-
         $.ajax({
             url: '/predict',  // Replace this with your API endpoint
             type: 'POST',
@@ -272,7 +277,8 @@
             contentType: false,
             processData: false,
             success: function (data) {
-              $('#output').html('Caption : ' + data.caption + "<br>" + 'Sport name : ' + data.label);
+              
+              $('#output').html( 'Corrected Text : ' + data.text + "<br><br>"+ 'Sport name : ' + data.label + "<br>"  + 'Caption : ' + data.caption);
               $("#note-spell-check").hide();
             },
             error: function (jqXHR, textStatus, errorThrown) {
